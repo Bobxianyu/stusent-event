@@ -181,7 +181,8 @@ pytestExit = 0
 | 功能分支 | `feat/query-statistics` |
 | 已同步 | `main` 的 `27ffd5b`（合并提交 `9bb543b`） |
 | 模块提交 | `7e4a89a` `feat(查询): 实现查询与统计模块` |
-| 文档提交 | 见 `git log feat/query-statistics` 最新一条 |
+| 文档提交 | ef15bf docs(查询): 补充需求、用例表、缺陷与交接文档 |
+| 推送 | 失败（403）：当前凭据账号 GQ-33550336 对仓库无写权限，见 7.1 |
 
 提交时按白名单逐个暂存，未使用 `git add .`：
 
@@ -190,6 +191,37 @@ git add -- campusApp/queries tests/queries docs/modules/queries
 git diff --cached --name-only
 git diff --cached --check
 ```
+
+### 7.1 推送受阻（需要人配合）
+
+推送命令与返回（真实输出）：
+
+`	ext
+$ git push -u origin feat/query-statistics
+remote: Permission to Bobxianyu/stusent-event.git denied to GQ-33550336.
+fatal: unable to access 'https://github.com/Bobxianyu/stusent-event.git/':
+The requested URL returned error: 403
+`
+
+原因：本机 Git 凭据管理器缓存的账号是 GQ-33550336，
+该账号不是 Bobxianyu/stusent-event 的协作者，只能读取、不能推送。
+这不是网络问题——读操作全部正常（git ls-remote、git clone、git fetch 均成功）。
+
+两条可行路径（任选一条）：
+
+1. 加协作者：请仓库负责人把 GQ-33550336 加为 collaborator（Write 权限），
+   之后在本目录执行 git push -u origin feat/query-statistics 即可。
+2. Fork + PR：在 GitHub 上 fork 该仓库，再把本地分支推到自己的 fork：
+
+   `powershell
+   git remote add mine https://github.com/GQ-33550336/stusent-event.git
+   git push -u mine feat/query-statistics
+   `
+
+   推完后在 GitHub 上从 GQ-33550336:feat/query-statistics
+   向上游 Bobxianyu:main 发起 Pull Request。
+
+本地分支与提交都已就绪，推送成功前不影响代码本身。
 
 ### 本机环境备注（不影响仓库内容）
 
