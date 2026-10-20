@@ -182,7 +182,9 @@ pytestExit = 0
 | 已同步 | `main` 的 `27ffd5b`（合并提交 `9bb543b`） |
 | 模块提交 | `7e4a89a` `feat(查询): 实现查询与统计模块` |
 | 文档提交 | ef15bf docs(查询): 补充需求、用例表、缺陷与交接文档 |
-| 推送 | 失败（403）：当前凭据账号 GQ-33550336 对仓库无写权限，见 7.1 |
+| 上游推送 | 失败（403）：账号 GQ-33550336 对上游只有 pull 权限 |
+| 实际推送 | 已推到 fork GQ-33550336/stusent-event 的 eat/query-statistics |
+| Pull Request | [PR #3](https://github.com/Bobxianyu/stusent-event/pull/3)（open，mergeable） |
 
 提交时按白名单逐个暂存，未使用 `git add .`：
 
@@ -192,7 +194,7 @@ git diff --cached --name-only
 git diff --cached --check
 ```
 
-### 7.1 推送受阻（需要人配合）
+### 7.1 推送路径：fork + PR（已完成）
 
 推送命令与返回（真实输出）：
 
@@ -204,24 +206,33 @@ The requested URL returned error: 403
 `
 
 原因：本机 Git 凭据管理器缓存的账号是 GQ-33550336，
-该账号不是 Bobxianyu/stusent-event 的协作者，只能读取、不能推送。
+该账号对上游只有读权限（GET /repos/Bobxianyu/stusent-event 返回
+permissions: {push: false, pull: true}），因此无法直接推送上游分支。
 这不是网络问题——读操作全部正常（git ls-remote、git clone、git fetch 均成功）。
 
-两条可行路径（任选一条）：
+**已执行的方案（fork + PR）**：
 
-1. 加协作者：请仓库负责人把 GQ-33550336 加为 collaborator（Write 权限），
-   之后在本目录执行 git push -u origin feat/query-statistics 即可。
-2. Fork + PR：在 GitHub 上 fork 该仓库，再把本地分支推到自己的 fork：
+`powershell
+# 1) 在账号下创建 fork（GitHub API）
+POST /repos/Bobxianyu/stusent-event/forks
 
-   `powershell
-   git remote add mine https://github.com/GQ-33550336/stusent-event.git
-   git push -u mine feat/query-statistics
-   `
+# 2) 把本地分支推到 fork
+git remote add mine https://github.com/GQ-33550336/stusent-event.git
+git push -u mine feat/query-statistics
 
-   推完后在 GitHub 上从 GQ-33550336:feat/query-statistics
-   向上游 Bobxianyu:main 发起 Pull Request。
+# 3) 从 fork 向上游 main 发起 PR
+POST /repos/Bobxianyu/stusent-event/pulls
+`
 
-本地分支与提交都已就绪，推送成功前不影响代码本身。
+结果：分支已推送成功，PR 已创建。
+
+- PR：<https://github.com/Bobxianyu/stusent-event/pull/3>
+- 状态：open、mergeable: true、4 个提交、23 个文件、+3294 / -0
+- 变更范围严格限于白名单：campusApp/queries/、	ests/queries/、docs/modules/queries/
+
+**若希望代码直接进上游分支**（而不是通过 PR 合并）：
+请仓库负责人把 GQ-33550336 加为 collaborator（Write 权限），
+之后即可 git push -u origin feat/query-statistics 直接推送。
 
 ### 本机环境备注（不影响仓库内容）
 
