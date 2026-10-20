@@ -757,37 +757,41 @@ def brokenService(queryStore, queryClock):
   return QueryService(queryStore, _BrokenRepository(), queryClock)
 
 
-def testListPersonalInternalError(brokenService, queryStore):
+def testListPersonalInternalError(brokenService, queryStore, caplog):
   seed(queryStore, [makeStudent(1, "2024010001", "张三")], [], [])
   r = brokenService.listPersonalRegistrations(1, 1, 10)
   assert r.ok is False
   assert r.error.code == "INTERNAL_ERROR"
   assert r.error.message == "查询个人报名记录时发生内部错误"
   assert r.data is None
+  assert caplog.records[-1].exc_info is not None
 
 
-def testListActivityInternalError(brokenService, queryStore):
+def testListActivityInternalError(brokenService, queryStore, caplog):
   seed(queryStore, [], [makeActivity(1)], [])
   r = brokenService.listActivityRegistrations(1, None, 1, 10)
   assert r.ok is False
   assert r.error.code == "INTERNAL_ERROR"
   assert r.error.message == "查询活动报名名单时发生内部错误"
   assert r.data is None
+  assert caplog.records[-1].exc_info is not None
 
 
-def testGetActivityStatsInternalError(brokenService, queryStore):
+def testGetActivityStatsInternalError(brokenService, queryStore, caplog):
   seed(queryStore, [], [makeActivity(1)], [])
   r = brokenService.getActivityStats(1)
   assert r.ok is False
   assert r.error.code == "INTERNAL_ERROR"
   assert r.error.message == "统计活动时发生内部错误"
   assert r.data is None
+  assert caplog.records[-1].exc_info is not None
 
 
-def testGetOverviewInternalError(brokenService, queryStore):
+def testGetOverviewInternalError(brokenService, queryStore, caplog):
   seed(queryStore, [], [], [])
   r = brokenService.getOverviewStats("2025-01-01", 30)
   assert r.ok is False
   assert r.error.code == "INTERNAL_ERROR"
   assert r.error.message == "总览统计时发生内部错误"
   assert r.data is None
+  assert caplog.records[-1].exc_info is not None
