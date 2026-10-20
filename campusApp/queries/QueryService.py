@@ -1,6 +1,8 @@
 """查询与统计模块：只读 Service。"""
 from __future__ import annotations
 
+import logging
+
 from campusApp.core.contracts import (
   Result,
   Page,
@@ -31,6 +33,7 @@ from campusApp.queries.QueryRepository import QueryRepository
 
 
 VALID_STATUSES = {STATUS_CONFIRMED, STATUS_WAITLISTED, STATUS_CANCELLED}
+LOGGER = logging.getLogger(__name__)
 
 
 class QueryService:
@@ -55,6 +58,7 @@ class QueryService:
     except DomainError as e:
       return failure(e.error.code, e.error.message, e.error.field)
     except Exception:
+      LOGGER.exception("查询个人报名记录时发生内部错误")
       return failure(ERROR_INTERNAL, "查询个人报名记录时发生内部错误")
 
   def _doListPersonal(self, state, studentId: int, page: int, pageSize: int) -> Page:
@@ -86,6 +90,7 @@ class QueryService:
     except DomainError as e:
       return failure(e.error.code, e.error.message, e.error.field)
     except Exception:
+      LOGGER.exception("查询活动报名名单时发生内部错误")
       return failure(ERROR_INTERNAL, "查询活动报名名单时发生内部错误")
 
   def _doListActivity(
@@ -127,6 +132,7 @@ class QueryService:
     except DomainError as e:
       return failure(e.error.code, e.error.message, e.error.field)
     except Exception:
+      LOGGER.exception("统计活动时发生内部错误")
       return failure(ERROR_INTERNAL, "统计活动时发生内部错误")
 
   def _doGetActivityStats(self, state, activityId: int) -> ActivityStats:
@@ -162,4 +168,5 @@ class QueryService:
     except DomainError as e:
       return failure(e.error.code, e.error.message, e.error.field)
     except Exception:
+      LOGGER.exception("总览统计时发生内部错误")
       return failure(ERROR_INTERNAL, "总览统计时发生内部错误")
