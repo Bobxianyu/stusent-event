@@ -15,7 +15,7 @@
 
 ## 启动与接入
 
-`python -m campusApp.app` 创建唯一窗口、唯一 Store 和四个固定页签。活动模块代码存在时会自动挂载活动页；其他模块组员提交真实 View 和 Service 后，由集成负责人在 `app.py` 统一挂载。
+`python -m campusApp.app` 创建唯一窗口、唯一 Store 和四个固定页签。`buildServices()` 将同一 Store 和时钟注入四个 Service；报名服务直接接收学生与活动仓储的读取协议。`buildApp()` 将四个真实 View 挂载到页签，切换时调用当前页的 `refresh()`，不会重建 Store。
 
 ## 注意事项
 
