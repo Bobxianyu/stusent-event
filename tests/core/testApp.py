@@ -5,7 +5,11 @@ from tkinter import ttk
 
 import pytest
 
+from campusApp.activities.ActivityView import ActivityView
 from campusApp.app import buildApp
+from campusApp.queries.QueryView import QueryView
+from campusApp.registrations.RegistrationView import RegistrationView
+from campusApp.students.StudentView import StudentView
 
 
 def testBuildAppHasFourTabs():
@@ -20,5 +24,7 @@ def testBuildAppHasFourTabs():
     assert [notebook.tab(tabId, "text") for tabId in notebook.tabs()] == [
       "学生管理", "活动管理", "报名与取消", "查询统计"
     ]
+    pages = [notebook.nametowidget(tabId) for tabId in notebook.tabs()]
+    assert [type(page) for page in pages] == [StudentView, ActivityView, RegistrationView, QueryView]
   finally:
     root.destroy()
